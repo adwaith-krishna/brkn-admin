@@ -7,14 +7,10 @@
     }
   ],
   "rewrites": [
-    // --- API Routes (These go first) ---
     { "source": "/login", "destination": "/backend/api.js" },
     { "source": "/logout", "destination": "/backend/api.js" },
     { "source": "/products", "destination": "/backend/api.js" },
     { "source": "/api/(.*)", "destination": "/backend/api.js" },
-
-    // --- Static File Catch-All (ADD THIS) ---
-    // This rule serves your HTML/CSS/JS files
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }

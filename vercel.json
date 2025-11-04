@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/api.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    { "source": "/login", "destination": "/backend/api.js" },
+    { "source": "/logout", "destination": "/backend/api.js" },
+    { "source": "/products", "destination": "/backend/api.js" },
+    { "source": "/api/(.*)", "destination": "/backend/api.js" }
+  ]
+}

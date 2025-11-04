@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRKN Admin Panel - Product Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #111;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .admin-header {
+            background: #000;
+            padding: 20px 40px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 20px;
+        }
+
+        .admin-nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            background: #fff;
+            color: #000;
+        }
+
+        .logout-btn {
+            color: #fff;
+            background: transparent;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #ff4444;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .admin-section {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #222;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* Product List */
+        .product-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .product-item {
+            background: #222;
+            border: 1px solid #333;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .product-preview {
+            width: 80px;
+            height: 60px;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .product-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info h4 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .product-info p {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #333;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        .btn.primary {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn.primary:hover {
+            background: #ddd;
+        }
+
+        .btn.danger {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .btn.danger:hover {
+            background: #ff4444;
+            color: #fff;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            border: 1px solid #555;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #555;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .image-upload-area:hover {
+            border-color: #fff;
+        }
+
+        .image-upload-area.dragover {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            background: #333;
+            border: 1px solid #555;
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-item .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff4444;
+            color: #fff;
+            border: none;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #222;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: #222;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* JSON Export/Import */
+        .json-area {
+            background: #333;
+            border: 1px solid #555;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 20px;
+            }
+            
+            .admin-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .product-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="admin-logo">BRKN ADMIN</div>
+        <nav class="admin-nav">
+            <a href="#products" class="nav-link active">Products</a>
+            <a href="#analytics" class="nav-link">Analytics</a>
+            <a href="#settings" class="nav-link">Settings</a>
+            <a href="brkn_website.html" target="_blank">View Site</a>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </nav>
+    </header>
+
+    <div class="admin-container">
+        <!-- Stats Section -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">Overview</h2>
+            </div>
+            <div class="section-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalProducts">0</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeProducts">0</div>
+                        <div class="stat-label">Active Products</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalImages">0</div>
+                        <div class="stat-label">Total Images</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="lastUpdated">Never</div>
+                        <div class="stat-label">Last Updated</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Management -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">Products Management</h2>
+                <div>
+                    <button class="btn primary" onclick="openAddProductModal()">Add New Product</button>
+                    <button class="btn" onclick="exportProducts()">Export JSON</button>
+                    <button class="btn" onclick="openImportModal()">Import JSON</button>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="product-list" id="productList">
+                    <!-- Products will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">Quick Actions</h2>
+            </div>
+            <div class="section-content">
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn" onclick="reorderProducts()">Reorder Products</button>
+                    <button class="btn" onclick="previewSite()">Preview Site</button>
+                    <button class="btn danger" onclick="clearAllProducts()">Clear All Products</button>
+                    <button class="btn" onclick="loadSampleData()">Load Sample Data</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Product</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-grid">
+                        <div>
+                            <div class="form-group">
+                                <label for="productName">Product Name</label>
+                                <input type="text" id="productName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productDescription">Description</label>
+                                <textarea id="productDescription" name="description" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="productStatus">Status</label>
+                                <select id="productStatus" name="status">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label>Product Images</label>
+                                <div class="image-upload-area" id="imageUploadArea">
+                                    <p>Drop images here or click to upload</p>
+                                    <p style="font-size: 12px; opacity: 0.7; margin-top: 5px;">
+                                        Upload 3 images (left, center, right)
+                                    </p>
+                                </div>
+                                <div class="image-preview-grid" id="imagePreviewGrid">
+                                    <!-- Image previews will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 30px; text-align: right;">
+                        <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Import Products</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Paste JSON Data</label>
+                    <div class="json-area" id="importJsonArea" contenteditable="true">
+                        Paste your exported JSON data here...
+                    </div>
+                </div>
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn primary" onclick="importProducts()">Import</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // --- CONFIGURATION ---
+    const API_URL = '';
+    let SUPABASE_JWT = null; 
+
+  
+    let products = [];
+    let editingProductId = null;
+
+    document.addEventListener('DOMContentLoaded', async function() {
+    // We no longer check for a token. We just try to load.
+    // The 'authenticate' middleware will handle unauthorized requests.
+    console.log("Loading admin panel... (Cookie auth)");
+
+    // These functions are updated below to use the new API routes
+    await loadProducts(); 
+    await updateStats();
+    setupImageUpload();
+});
+
+    // --- DELETE getAuthHeaders() ---
+// function getAuthHeaders() { ... } // ⬅️ DELETE THIS
+
+// --- ADD getPostHeaders() ---
+// Use this for POST/PUT requests
+function getPostHeaders() {
+    return {
+        'Content-Type': 'application/json'
+    };
+}
+
+    function showNotification(message, type = 'success') {
+        const existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed; top: 20px; right: 20px;
+            background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+            color: white; padding: 15px 20px; border-radius: 4px;
+            z-index: 10000; font-size: 14px;
+            animation: slideIn 0.3s ease;
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease forwards';
+            notification.addEventListener('animationend', () => notification.remove());
+        }, 3000);
+    }
+   
+    // --- REPLACE 'loadProducts' ---
+async function loadProducts() {
+    try {
+        // 1. Call the new /api/products route
+        // 2. Add credentials: 'include'
+        const response = await fetch(`${API_URL}/api/products`, {
+            credentials: 'include' 
+        });
+
+        // 3. Check for 401/403 and redirect to login
+        if (response.status === 401 || response.status === 403) {
+            alert('Session expired or unauthorized. Redirecting to login.');
+            window.location.href = 'login.html'; // ⚠️ Make sure this filename is correct
+            return;
+        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        products = await response.json();
+        renderProducts();
+    } catch (error) {
+        console.error('Error loading products:', error);
+        showNotification('Failed to load products from the server.', 'error');
+    }
+}
+    
+    // --- REPLACE 'updateStats' ---
+async function updateStats() {
+    try {
+        // 1. Call the new /api/overview route
+        // 2. Add credentials: 'include'
+        const response = await fetch(`${API_URL}/api/overview`, {
+            credentials: 'include'
+        });
+        if (response.status === 401 || response.status === 403) return; // Already handled by loadProducts
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const stats = await response.json();
+        
+        document.getElementById('totalProducts').textContent = stats.totalProducts;
+        document.getElementById('activeProducts').textContent = stats.activeProducts;
+        document.getElementById('totalImages').textContent = stats.totalImages;
+        document.getElementById('lastUpdated').textContent = stats.lastUpdated 
+            ? new Date(stats.lastUpdated).toLocaleTimeString() 
+            : 'Never';
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        showNotification('Failed to update stats.', 'error');
+    }
+}
+
+    function renderProducts() {
+        const productList = document.getElementById('productList');
+        if (!products || products.length === 0) {
+            productList.innerHTML = `<div style="text-align: center; padding: 40px; opacity: 0.7;"><p>No products found.</p></div>`;
+            return;
+        }
+
+        productList.innerHTML = products.map(product => `
+            <div class="product-item" data-id="${product.id}">
+                <div class="product-preview">
+                    ${product.images && product.images[1] ? `<img src="${product.images[1]}" alt="${product.name}">` : 'No Image'}
+                </div>
+                <div class="product-info">
+                    <h4>${product.name} ${product.status !== 'active' ? '(Inactive)' : ''}</h4>
+                    <p>${product.description || 'No description'}</p>
+                    <p style="font-size: 12px; opacity: 0.5; margin-top: 5px;">
+                        ${product.images ? product.images.length : 0} images • 
+                        Created: ${new Date(product.created_at).toLocaleDateString()}
+                    </p>
+                </div>
+                <div class="product-actions">
+                    <button class="btn" onclick="openEditModal('${product.id}')">Edit</button>
+                    <button class="btn danger" onclick="deleteProduct('${product.id}')">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // --- REPLACE 'productForm' submit listener ---
+document.getElementById('productForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const images = Array.from(document.getElementById('imagePreviewGrid').querySelectorAll('img')).map(img => img.src);
+    
+    // ⚠️ REMINDER: You should add a price field to your form!
+    const productData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        status: formData.get('status'),
+        images: images,
+        price: 8499 // Placeholder price
+    };
+
+    try {
+        let url = `${API_URL}/api/products`; // Use /api/products
+        let method = 'POST';
+
+        if (editingProductId) {
+            url = `${API_URL}/api/products/${editingProductId}`; // Use /api/products/:id
+            method = 'PUT';
+        }
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: getPostHeaders(), // Use new header function
+            body: JSON.stringify(productData),
+            credentials: 'include' // Add credentials
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        showNotification(`Product ${editingProductId ? 'updated' : 'added'} successfully!`);
+        await loadProducts();
+        await updateStats();
+        closeModal();
+    } catch (error) {
+        console.error('Error saving product:', error);
+        showNotification('Failed to save product.', 'error');
+    }
+});
+
+    // --- REPLACE 'deleteProduct' ---
+async function deleteProduct(id) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        try {
+            const response = await fetch(`${API_URL}/api/products/${id}`, { // Use /api/products/:id
+                method: 'DELETE',
+                credentials: 'include' // Add credentials
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            showNotification('Product deleted successfully!');
+            await loadProducts();
+            await updateStats();
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            showNotification('Failed to delete product.', 'error');
+        }
+    }
+}
+
+   
+
+    function openAddProductModal() {
+        editingProductId = null;
+        document.getElementById('modalTitle').textContent = 'Add New Product';
+        document.getElementById('productForm').reset();
+        document.getElementById('imagePreviewGrid').innerHTML = '';
+        document.getElementById('productModal').classList.add('show');
+    }
+
+    function openEditModal(id) {
+
+        console.log("openEditModal function called with ID:", id);
+
+        const product = products.find(p => String(p.id) === String(id));
+        console.log("Found product:", product);
+        if (!product) return;
+
+        editingProductId = id;
+        document.getElementById('modalTitle').textContent = 'Edit Product';
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productDescription').value = product.description || '';
+        document.getElementById('productStatus').value = product.status;
+        
+        const imageGrid = document.getElementById('imagePreviewGrid');
+        imageGrid.innerHTML = '';
+        if (product.images) {
+            product.images.forEach((url) => {
+                const item = document.createElement('div');
+                item.className = 'image-preview-item';
+                item.innerHTML = `
+                    <img src="${url}" alt="Product image">
+                    <button class="remove-image" onclick="this.parentElement.remove()">&times;</button>
+                `;
+                imageGrid.appendChild(item);
+            });
+        }
+
+        const modalElement = document.getElementById('productModal');
+        console.log("Modal element:", modalElement);
+
+        modalElement.classList.add('show');
+    }
+
+    function closeModal() {
+        document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('show'));
+    }
+
+    function setupImageUpload() {
+        const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.accept = 'image/*';
+            input.onchange = handleFileSelect;
+            input.click();
+        });
+        ['dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (eventName === 'dragover') uploadArea.classList.add('dragover');
+                else uploadArea.classList.remove('dragover');
+                if (eventName === 'drop') handleFileSelect({ target: { files: e.dataTransfer.files } });
+            });
+        });
+    }
+
+    function handleFileSelect(e) {
+        const files = Array.from(e.target.files);
+        const imageGrid = document.getElementById('imagePreviewGrid');
+        files.forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const item = document.createElement('div');
+                    item.className = 'image-preview-item';
+                    item.innerHTML = `
+                        <img src="${event.target.result}" alt="Product image">
+                        <button class="remove-image" onclick="this.parentElement.remove()">&times;</button>
+                    `;
+                    imageGrid.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    
+    function exportProducts() {
+        const jsonStr = JSON.stringify({ products: products, exportedAt: new Date().toISOString() }, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `brkn-products-export.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showNotification('Products exported successfully!');
+    }
+
+function openImportModal() {
+    document.getElementById('importModal').classList.add('show');
+
+    document.getElementById('importJsonArea').textContent = 'Paste your exported JSON data here...';
+}
+
+// --- REPLACE 'importProducts' ---
+async function importProducts() {
+    const jsonText = document.getElementById('importJsonArea').textContent.trim();
+    try {
+        const data = JSON.parse(jsonText);
+        if (!data.products || !Array.isArray(data.products)) throw new Error('Invalid JSON');
+        
+        const productsToImport = data.products;
+        showNotification(`Importing ${productsToImport.length} products...`, 'info');
+        closeModal();
+
+        const importPromises = productsToImport.map(product => {
+            const newProduct = {
+                name: product.name,
+                description: product.description,
+                status: product.status,
+                images: product.images,
+                price: product.price || 8499, // Use existing price or default
+                created_at: product.created_at || new Date().toISOString(),
+                updated_at: product.updated_at || new Date().toISOString()
+            };
+            
+            return fetch(`${API_URL}/api/products`, { // Use /api/products
+                method: 'POST',
+                headers: getPostHeaders(),
+                body: JSON.stringify(newProduct),
+                credentials: 'include' // Add credentials
+            });
+        });
+        
+        const results = await Promise.all(importPromises);
+        const failedCount = results.filter(res => !res.ok).length;
+        
+        if (failedCount > 0) {
+            showNotification(`${failedCount} products failed to import.`, 'error');
+        } else {
+            showNotification(`Successfully imported ${productsToImport.length} products!`);
+        }
+
+        await loadProducts();
+        await updateStats();
+    } catch (error) {
+        console.error('Import error:', error);
+        alert('Invalid JSON data.\n' + error.message);
+    }
+}
+    
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(100%); } }
+    `;
+    document.head.appendChild(style);
+
+    // --- REPLACE 'logout' ---
+async function logout() {
+    const confirmLogout = confirm('Are you sure you want to logout?');
+    if (confirmLogout) {
+        try {
+            // Call the backend /logout endpoint
+            await fetch(`${API_URL}/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (error) {
+            console.error("Error during logout:", error);
+        }
+        
+        // Always redirect
+        showNotification('Logged out successfully!');
+        setTimeout(() => {
+            window.location.href = 'login.html'; // ⚠️ Make sure this filename is correct
+        }, 1000);
+    }
+}
+
+</script>
+</body>
+</html>

@@ -7,14 +7,12 @@
     }
   ],
   "rewrites": [
-    // --- API Routes (These must come FIRST) ---
     { "source": "/login", "destination": "/backend/api.js" },
     { "source": "/logout", "destination": "/backend/api.js" },
     { "source": "/products", "destination": "/backend/api.js" },
     { "source": "/api/(.*)", "destination": "/backend/api.js" },
 
-    // --- Static File Catch-All (This must come LAST) ---
-    // This rule serves your login.html, brkn_admin_panel.html, etc.
+    
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }

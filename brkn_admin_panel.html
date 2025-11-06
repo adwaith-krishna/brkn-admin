@@ -521,7 +521,7 @@
     </div>
 
     <script>
-    // --- CONFIGURATION ---
+  
     const API_URL = '';
     let SUPABASE_JWT = null; 
 
@@ -530,21 +530,14 @@
     let editingProductId = null;
 
     document.addEventListener('DOMContentLoaded', async function() {
-    // We no longer check for a token. We just try to load.
-    // The 'authenticate' middleware will handle unauthorized requests.
+   
     console.log("Loading admin panel... (Cookie auth)");
 
-    // These functions are updated below to use the new API routes
     await loadProducts(); 
     await updateStats();
     setupImageUpload();
 });
 
-    // --- DELETE getAuthHeaders() ---
-// function getAuthHeaders() { ... } // ⬅️ DELETE THIS
-
-// --- ADD getPostHeaders() ---
-// Use this for POST/PUT requests
 function getPostHeaders() {
     return {
         'Content-Type': 'application/json'
@@ -572,19 +565,18 @@ function getPostHeaders() {
         }, 3000);
     }
    
-    // --- REPLACE 'loadProducts' ---
+ 
 async function loadProducts() {
     try {
-        // 1. Call the new /api/products route
-        // 2. Add credentials: 'include'
+      
         const response = await fetch(`${API_URL}/api/products`, {
             credentials: 'include' 
         });
 
-        // 3. Check for 401/403 and redirect to login
+      
         if (response.status === 401 || response.status === 403) {
             alert('Session expired or unauthorized. Redirecting to login.');
-            window.location.href = 'login.html'; // ⚠️ Make sure this filename is correct
+            window.location.href = 'login.html'; 
             return;
         }
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -597,11 +589,9 @@ async function loadProducts() {
     }
 }
     
-    // --- REPLACE 'updateStats' ---
+
 async function updateStats() {
     try {
-        // 1. Call the new /api/overview route
-        // 2. Add credentials: 'include'
         const response = await fetch(`${API_URL}/api/overview`, {
             credentials: 'include'
         });
@@ -650,35 +640,35 @@ async function updateStats() {
         `).join('');
     }
 
-    // --- REPLACE 'productForm' submit listener ---
+  
 document.getElementById('productForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const formData = new FormData(this);
     const images = Array.from(document.getElementById('imagePreviewGrid').querySelectorAll('img')).map(img => img.src);
     
-    // ⚠️ REMINDER: You should add a price field to your form!
+    
     const productData = {
         name: formData.get('name'),
         description: formData.get('description'),
         status: formData.get('status'),
         images: images,
-        price: 8499 // Placeholder price
+        price: 8499 
     };
 
     try {
-        let url = `${API_URL}/api/products`; // Use /api/products
+        let url = `${API_URL}/api/products`; 
         let method = 'POST';
 
         if (editingProductId) {
-            url = `${API_URL}/api/products/${editingProductId}`; // Use /api/products/:id
+            url = `${API_URL}/api/products/${editingProductId}`; 
             method = 'PUT';
         }
         
         const response = await fetch(url, {
             method: method,
-            headers: getPostHeaders(), // Use new header function
+            headers: getPostHeaders(), 
             body: JSON.stringify(productData),
-            credentials: 'include' // Add credentials
+            credentials: 'include'
         });
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -693,7 +683,7 @@ document.getElementById('productForm').addEventListener('submit', async function
     }
 });
 
-    // --- REPLACE 'deleteProduct' ---
+
 async function deleteProduct(id) {
     if (confirm('Are you sure you want to delete this product?')) {
         try {
@@ -820,7 +810,7 @@ function openImportModal() {
     document.getElementById('importJsonArea').textContent = 'Paste your exported JSON data here...';
 }
 
-// --- REPLACE 'importProducts' ---
+
 async function importProducts() {
     const jsonText = document.getElementById('importJsonArea').textContent.trim();
     try {
@@ -837,16 +827,16 @@ async function importProducts() {
                 description: product.description,
                 status: product.status,
                 images: product.images,
-                price: product.price || 8499, // Use existing price or default
+                price: product.price || 8499, 
                 created_at: product.created_at || new Date().toISOString(),
                 updated_at: product.updated_at || new Date().toISOString()
             };
             
-            return fetch(`${API_URL}/api/products`, { // Use /api/products
+            return fetch(`${API_URL}/api/products`, { 
                 method: 'POST',
                 headers: getPostHeaders(),
                 body: JSON.stringify(newProduct),
-                credentials: 'include' // Add credentials
+                credentials: 'include' 
             });
         });
         
@@ -874,12 +864,11 @@ async function importProducts() {
     `;
     document.head.appendChild(style);
 
-    // --- REPLACE 'logout' ---
 async function logout() {
     const confirmLogout = confirm('Are you sure you want to logout?');
     if (confirmLogout) {
         try {
-            // Call the backend /logout endpoint
+           
             await fetch(`${API_URL}/logout`, {
                 method: 'POST',
                 credentials: 'include'
@@ -888,10 +877,10 @@ async function logout() {
             console.error("Error during logout:", error);
         }
         
-        // Always redirect
+
         showNotification('Logged out successfully!');
         setTimeout(() => {
-            window.location.href = 'login.html'; // ⚠️ Make sure this filename is correct
+            window.location.href = 'https://brkn-admin.vercel.app';
         }, 1000);
     }
 }

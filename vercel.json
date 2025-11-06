@@ -4,15 +4,32 @@
     {
       "src": "backend/api.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "assets/**/*",
+      "use": "@vercel/static"
     }
   ],
-  "rewrites": [
-    { "source": "/login", "destination": "/backend/api.js" },
-    { "source": "/logout", "destination": "/backend/api.js" },
-    { "source": "/products", "destination": "/backend/api.js" },
-    { "source": "/api/(.*)", "destination": "/backend/api.js" },
-
-    
-    { "source": "/(.*)", "destination": "/$1" }
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/api.js"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
+    },
+    {
+      "src": "/admin",
+      "dest": "/admin_panel.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }
